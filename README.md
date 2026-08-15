@@ -1,5 +1,7 @@
 # dsh-permissions
 
+English | [中文](./README.zh.md)
+
 Claude Code-style **permission rules engine** for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh). A dual-face Cordis plugin: a host engine on the `tools/pre-execute` waterfall plus a visual editor in **Settings → 权限 (Permissions)**.
 
 ## Highlights
