@@ -1,0 +1,40 @@
+{
+  "name": "dsh-permissions",
+  "version": "1.0.0",
+  "description": "Claude Code-style permission rules engine for DeepSeek Harness: hard/deny/ask/allow tiers (hard outranks full access), global + per-workspace scopes, wildcard path matching, a visual settings editor, and persistent rules in settings.yaml.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "PUBLISH.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "client": {
+      "inject": [],
+      "platform": "web"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "permissions",
+    "security",
+    "approval"
+  ],
+  "license": "MIT"
+}

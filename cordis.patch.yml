@@ -1,0 +1,8 @@
+# dsh-permissions —— Claude Code-style permission rules engine
+# One dual-face package: this patch mounts the host engine (lib/index.js) and the
+# modules scanner picks up the browser half (lib/client.js) from the same row.
+# Install via `dsh plugin add dsh-permissions` (official installer) or append this
+# list to your profile's cordis.patch.yml.
+- insert:
+    - id: permissions
+      name: dsh-permissions
