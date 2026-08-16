@@ -1,46 +1,49 @@
 # dsh-permissions
 
-English | [中文](./README.zh.md)
+中文 | [English](./README.en.md)
 
-Claude Code-style **permission rules engine** for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh). A dual-face Cordis plugin: a host engine on the `tools/pre-execute` waterfall plus a visual editor in **Settings → 权限 (Permissions)**.
+[![Awesome DSH Plugin](https://beancookie.github.io/awesome-dsh-plugin/badge.svg)](https://beancookie.github.io/awesome-dsh-plugin)
+[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
-## Highlights
+面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（dsh）的 **Claude Code 风格权限规则引擎**。双面 Cordis 插件：宿主侧在 `tools/pre-execute` 瀑布上做拦截判定，浏览器侧提供 **设置 → 权限** 可视化编辑器。
 
-- **Four rule tiers with strict precedence**: `hard` > `deny` > `ask` > `allow`.
-- **`hard` outranks full access**: hard rules keep blocking even when the session is on the full-access preset (approval policy `never`); `ask` rules follow the session policy and auto-pass under full access.
-- **Scopes**: `global` rules apply everywhere; per-`workspace` rules merge on top (deny always wins on conflict).
-- **Wildcard matching** for file tools (`read`/`write`/`edit`/`glob`/`grep`/`read_image`):
-  - `write(*.pem)` — path ends with `.pem`
-  - `write(*secret*)` — path contains `secret`
-  - `write(.ssh)` — path segment `.ssh` anywhere (case-insensitive, `\`/`/` normalized)
-  - `write(C:\users\*)` — absolute-path prefix
-  - bare `write` — every invocation
-- **Persistence**: rules live in the `dsh-permissions` settings namespace and survive restarts (`<harness home>/settings.yaml`).
-- **Model transparency**: active rules are injected into the system prompt (`[active-permission-rules]`).
-- **Visual editor**: staged (draft) editing — changes apply only after **Save & Apply**, with one-click presets (protect sensitive dirs / key files / dangerous commands).
+## 亮点
 
-## Rule syntax
+- **四级规则、严格优先级**：`hard` > `deny` > `ask` > `allow`。
+- **`hard` 高于全访问**：即使会话处于全访问档（审批策略 `never`），hard 规则依然拦截、不可豁免；`ask` 规则跟随会话策略，全访问下自动放行。
+- **作用域**：`global` 规则全局生效；按 `workspace` 的规则叠加合并（冲突时 deny 永远胜出）。
+- **通配符匹配**（文件类工具 `read`/`write`/`edit`/`glob`/`grep`/`read_image`）：
+  - `write(*.pem)` —— 路径以 `.pem` 结尾
+  - `write(*secret*)` —— 路径包含 `secret`
+  - `write(.ssh)` —— 路径任意位置出现 `.ssh` 片段（大小写不敏感，`\`/`/` 统一归一化）
+  - `write(C:\users\*)` —— 绝对路径前缀
+  - 裸 `write` —— 该工具全部调用
+- **持久化**：规则存于 `dsh-permissions` 设置命名空间，跨重启保留（`<harness home>/settings.yaml`）。
+- **模型透明**：生效规则注入系统提示（`[active-permission-rules]` 段）。
+- **可视化编辑器**：草稿式（staged）编辑——所有修改点「保存并应用」后才生效，附一键预设（保护敏感目录 / 密钥文件 / 拦截危险命令）。
 
-| Rule | Meaning |
+## 规则语法
+
+| 规则 | 含义 |
 |---|---|
-| `pwsh` | every call of that tool |
-| `pwsh(npm run)` | first argument starts with `npm run` |
-| `write(*.pem)` | file path ends with `.pem` |
-| `write(*secret*)` | file path contains `secret` |
-| `write(.ssh)` | path segment `.ssh` anywhere |
-| `pwsh(*)` | every call (explicit) |
+| `pwsh` | 该工具的全部调用 |
+| `pwsh(npm run)` | 首参以 `npm run` 开头 |
+| `write(*.pem)` | 文件路径以 `.pem` 结尾 |
+| `write(*secret*)` | 文件路径包含 `secret` |
+| `write(.ssh)` | 路径任意位置出现 `.ssh` 片段 |
+| `pwsh(*)` | 全部调用（显式写法） |
 
-Non-file tools match the raw first argument by prefix. `grep` additionally matches its `path` argument.
+非文件工具按首参原文做前缀匹配；`grep` 额外匹配其 `path` 参数。
 
-## Install
+## 安装
 
-**Option A — official installer (recommended):**
+**方式 A —— 官方安装器（推荐）：**
 
 ```bash
 dsh plugin add dsh-permissions
 ```
 
-**Option B — manual patch row:** append the `insert` list from this repo's [`cordis.patch.yml`](./cordis.patch.yml) to your profile patch (`~/.dsh/cordis.patch.yml` or `~/.dsh/profiles/<profile>/cordis.patch.yml`), after installing the package where the profile resolves it (`~/.dsh/node_modules/dsh-permissions`):
+**方式 B —— 手工补丁行：** 把本仓库 [`cordis.patch.yml`](./cordis.patch.yml) 中的 `insert` 列表追加到你的 profile 补丁（`~/.dsh/cordis.patch.yml` 或 `~/.dsh/profiles/<profile>/cordis.patch.yml`），并确保包已安装到 profile 可解析的位置（`~/.dsh/node_modules/dsh-permissions`）：
 
 ```yaml
 - insert:
@@ -48,22 +51,22 @@ dsh plugin add dsh-permissions
       name: dsh-permissions
 ```
 
-Then restart the app. The **Settings → 权限** page appears automatically; the engine starts with safe defaults (16 hard rules protecting `.ssh` / `.aws` / `.gnupg` / `AppData` / `*.pem` / `*.key` / `*.env` / `*.htpasswd`, plus `deny: pwsh(rm -rf *)`).
+然后重启应用。**设置 → 权限** 页自动出现；引擎自带安全默认值（16 条 hard 规则保护 `.ssh` / `.aws` / `.gnupg` / `AppData` / `*.pem` / `*.key` / `*.env` / `*.htpasswd`，以及 `deny: pwsh(rm -rf *)`）。
 
-## Permissions page
+## 权限设置页
 
-- Engine toggle, three one-click preset cards, a point-and-click rule builder (action × tool × match mode × value → live preview), and four colored rule panels.
-- All edits are **staged**: nothing affects the agent until you click **Save & Apply**; **Discard** restores the last saved state.
+- 引擎开关、三张一键预设卡、点选式规则构建器（动作 × 工具 × 匹配方式 × 参数 → 实时预览）、四个彩色规则面板。
+- 所有修改先进入**草稿**：点「保存并应用」前不影响 AI 行为；「放弃修改」恢复上次保存状态。
 
-## Security notes
+## 安全说明
 
-- The engine only narrows the session's existing sandbox/approval posture: `allow` skips this plugin's own ask but never bypasses the DSH sandbox or `tools.guard` guards.
-- Denials surface to the model as `Error: 权限规则拒绝…` (hard: `硬规则拒绝（高于 full access，不可豁免）…`), so the agent can route around blocked calls.
-- The settings route (`GET/POST /api/dperm/rules`) is the namespace owner's own endpoint — the DSH api-proxy's settings allowlist intentionally does not expose third-party namespaces.
+- 引擎只会**收窄**会话现有的沙箱/审批姿态：`allow` 只跳过本插件的询问，绝不绕过 DSH 沙箱或 `tools.guard` 守卫。
+- 拦截以工具错误呈现给模型（`Error: 权限规则拒绝…`；hard 为 `硬规则拒绝（高于 full access，不可豁免）…`），模型可见完整规则原文，可据此改道。
+- 设置页路由（`GET/POST /api/dperm/rules`）是命名空间所有者自建的端点——DSH api-proxy 的 settings 白名单刻意不暴露第三方命名空间。
 
-## Development / publishing
+## 开发与发布
 
-See [PUBLISH.md](./PUBLISH.md) for the release checklist and the pitfalls we hit (client package `exports` must include `./package.json`; bundle id must equal the package name; no unbounded method refs into React's `useSyncExternalStore`).
+见 [PUBLISH.md](./PUBLISH.md)：发布清单与本插件踩过的坑（客户端包 `exports` 必须含 `./package.json`；bundle 模块 id 必须等于包名；`useSyncExternalStore` 不能传未绑定方法引用等）。
 
 ## License
 
