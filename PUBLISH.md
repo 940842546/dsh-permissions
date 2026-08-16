@@ -24,6 +24,7 @@ dsh-permissions/
 
 ## Pitfalls hit during development (so the next release doesn't)
 
+0. **`link:`-installed profiles resolve imports from the real source path** — `dsh plugin --profile <p> add link:<checkout>` keeps the package external, so Node resolves `@deepseek-ai/schemastery` from the checkout, not the profile. Fix: install the peer into the profile (`dsh plugin --profile <p> add @deepseek-ai/schemastery`) and bridge it into the checkout with a junction at `<checkout>/node_modules/@deepseek-ai/schemastery` → `<profile>/node_modules/@deepseek-ai/schemastery` (gitignored). `file:` specs copy and install deps instead, at the cost of losing live-edit.
 1. **Client package `exports` must include `"./package.json"`** — the client-modules node half reads the package manifest through `require.resolve('<pkg>/package.json')`; without the export the row is silently skipped (no bundle route, no settings page).
 2. **Bundle `__ModuleLoader__.load` id must equal the package name** — the graph row is keyed by entry name.
 3. **Never pass unbounded method references to React's `useSyncExternalStore`** (`controller.subscribe` loses `this` and crashes the render).
