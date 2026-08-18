@@ -22,6 +22,12 @@ Claude Code-style **permission rules engine** for [DeepSeek Harness](https://git
 - **Model transparency**: active rules are injected into the system prompt (`[active-permission-rules]`).
 - **Visual editor**: staged (draft) editing — changes apply only after **Save & Apply**, with one-click presets (protect sensitive dirs / key files / dangerous commands).
 
+## Screenshots
+
+| Top: scope & rule builder | Panels / tester / decision log | Staged saving |
+|---|---|---|
+| ![overview](./assets/en-01-permissions-overview.png) | ![rules](./assets/en-02-permissions-rules.png) | ![draft](./assets/en-03-permissions-draft.png) |
+
 ## Rule syntax
 
 | Rule | Meaning |

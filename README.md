@@ -22,6 +22,12 @@
 - **模型透明**：生效规则注入系统提示（`[active-permission-rules]` 段）。
 - **可视化编辑器**：草稿式（staged）编辑——所有修改点「保存并应用」后才生效，附一键预设（保护敏感目录 / 密钥文件 / 拦截危险命令）。
 
+## 界面截图
+
+| 顶部：作用域与规则构建器 | 规则面板 / 试算器 / 决策日志 | 草稿式保存 |
+|---|---|---|
+| ![顶部概览](./assets/01-permissions-overview.png) | ![规则面板](./assets/02-permissions-rules.png) | ![草稿态](./assets/03-permissions-draft.png) |
+
 ## 规则语法
 
 | 规则 | 含义 |
