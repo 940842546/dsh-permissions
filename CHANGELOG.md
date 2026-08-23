@@ -45,3 +45,11 @@
 ## 1.0.0
 
 - Initial release: Claude Code-style permission rules engine — hard/deny/ask/allow tiers with a hard tier above full access, global + workspace scopes, wildcard path matching (`*.pem`, `*secret*`, segments, absolute prefixes), staged visual editor with one-click presets, persistence in `settings.yaml`, model-visible rule summary via `systemPrompt`.
+
+## 1.1.0
+- Extract matcher into lib/match.js (pure, dependency-free) with 26 unit tests (
+ode --test) + GitHub Actions CI.
+- Fixed absolute-path patterns with mid-path wildcards (c:/users/*/.ssh/*) previously treated literally.
+- Bilingual (English) deny/ask reasons for model-side comprehension.
+- Composer badge (conversation.input.right): live rule count / engine-off state.
+- Import rules from URL (fetch any rules-JSON link, e.g. GitHub raw).
