@@ -59,3 +59,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.1.2
 - Badge click now opens a self-contained popover (engine state, per-action counts, top-5 hit rules) instead of the no-op settings-jump event; click-outside closes.
+
+## 1.1.3
+- Badge popover opens upward (the badge sits at the screen bottom; the old downward popover was clipped off-screen).
