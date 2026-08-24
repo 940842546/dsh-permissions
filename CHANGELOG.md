@@ -68,3 +68,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.1.5
 - Badge rework: live recent-decisions feed (last 4 calls with action dots) in the popover; badge shows rule count + blocked count (x N); 5s refresh; removed the pause toggle.
+
+## 1.1.6
+- Popover rows rework: decision label pinned first, arg clipped to 18 chars with ellipsis, full tool+arg on hover.
