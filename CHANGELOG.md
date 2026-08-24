@@ -56,3 +56,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.1.1
 - Rule hit counts: each rule shows a xN badge (times its scope matched since engine start); /api/dperm/stats.
+
+## 1.1.2
+- Badge click now opens a self-contained popover (engine state, per-action counts, top-5 hit rules) instead of the no-op settings-jump event; click-outside closes.
