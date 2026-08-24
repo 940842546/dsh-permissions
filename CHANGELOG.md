@@ -65,3 +65,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.1.4
 - Badge popover: actionable — pause/enable engine toggle button (writes through the rules API), fixed row overflow layout.
+
+## 1.1.5
+- Badge rework: live recent-decisions feed (last 4 calls with action dots) in the popover; badge shows rule count + blocked count (x N); 5s refresh; removed the pause toggle.
