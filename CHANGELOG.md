@@ -71,3 +71,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.1.6
 - Popover rows rework: decision label pinned first, arg clipped to 18 chars with ellipsis, full tool+arg on hover.
+
+## 1.1.7
+- Popover width now fits content (width:max-content) — no more trailing blank space; arg clip relaxed to 26 chars.
