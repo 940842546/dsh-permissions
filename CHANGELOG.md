@@ -62,3 +62,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.1.3
 - Badge popover opens upward (the badge sits at the screen bottom; the old downward popover was clipped off-screen).
+
+## 1.1.4
+- Badge popover: actionable — pause/enable engine toggle button (writes through the rules API), fixed row overflow layout.
