@@ -53,3 +53,6 @@ ode --test) + GitHub Actions CI.
 - Bilingual (English) deny/ask reasons for model-side comprehension.
 - Composer badge (conversation.input.right): live rule count / engine-off state.
 - Import rules from URL (fetch any rules-JSON link, e.g. GitHub raw).
+
+## 1.1.1
+- Rule hit counts: each rule shows a xN badge (times its scope matched since engine start); /api/dperm/stats.
