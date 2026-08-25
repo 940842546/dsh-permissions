@@ -80,3 +80,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.2.1
 - Decision log and rule hit counts now survive restarts: every decision is appended to `~/.dsh/dsh-permissions-history.jsonl` (async append, rule keys included for hit-count replay); the tail 200 entries and hit counts are restored on boot; the file self-trims at 2MB.
+
+## 1.2.2
+- Session-grants panel in Settings (list + revoke, all sessions); sanitized rules export (username paths replaced with ~); decision-log CSV export.
