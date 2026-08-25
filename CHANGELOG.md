@@ -77,3 +77,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.2.0
 - Session grants ("always allow this session"): ask rules surface a three-choice prompt (allow once / always this session / deny) in the badge popover with an amber pulsing badge state; grants are per session+rule key, in-memory.
+
+## 1.2.1
+- Decision log and rule hit counts now survive restarts: every decision is appended to `~/.dsh/dsh-permissions-history.jsonl` (async append, rule keys included for hit-count replay); the tail 200 entries and hit counts are restored on boot; the file self-trims at 2MB.
