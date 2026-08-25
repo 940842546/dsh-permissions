@@ -74,3 +74,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.1.7
 - Popover width now fits content (width:max-content) — no more trailing blank space; arg clip relaxed to 26 chars.
+
+## 1.2.0
+- Session grants ("always allow this session"): ask rules surface a three-choice prompt (allow once / always this session / deny) in the badge popover with an amber pulsing badge state; grants are per session+rule key, in-memory.
