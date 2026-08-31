@@ -83,3 +83,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.2.2
 - Session-grants panel in Settings (list + revoke, all sessions); sanitized rules export (username paths replaced with ~); decision-log CSV export.
+
+## 1.2.3
+- Security: /api/dperm/* routes now go through the browser authentication wall (connection.authorizeIndex) on dsh >= 0.1.2-alpha.2; older versions without the connection service pass through (no auth existed there).
