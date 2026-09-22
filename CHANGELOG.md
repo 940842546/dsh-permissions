@@ -86,3 +86,6 @@ ode --test) + GitHub Actions CI.
 
 ## 1.2.3
 - Security: /api/dperm/* routes now go through the browser authentication wall (connection.authorizeIndex) on dsh >= 0.1.2-alpha.2; older versions without the connection service pass through (no auth existed there).
+
+## 2.0.0
+- **BREAKING**: dsh >= 0.1.7-alpha.1 removed ctx.settings.register (SettingsForms refactor). The plugin now self-manages its rules in `~/.dsh/dsh-permissions-state.json` (loadState/saveState) instead of the settings namespace. First run auto-migrates rules from the old settings.yaml dsh-permissions section. Dropped the @deepseek-ai/schemastery peerDependency (no longer needed). All existing rules, decision-log persistence, HTTP routes, session grants, and auth gating are preserved.
