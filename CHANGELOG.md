@@ -89,3 +89,11 @@ ode --test) + GitHub Actions CI.
 
 ## 2.0.0
 - **BREAKING**: dsh >= 0.1.7-alpha.1 removed ctx.settings.register (SettingsForms refactor). The plugin now self-manages its rules in `~/.dsh/dsh-permissions-state.json` (loadState/saveState) instead of the settings namespace. First run auto-migrates rules from the old settings.yaml dsh-permissions section. Dropped the @deepseek-ai/schemastery peerDependency (no longer needed). All existing rules, decision-log persistence, HTTP routes, session grants, and auth gating are preserved.
+
+## 2.0.1
+- Fix: use connection.isAuthenticated for API route auth instead of authorizeIndex (authorizeIndex writes 303/401 responses and only handles the / path, so it silently blocked all /api/dperm/* calls).
+- Fix: move rulesRev/wsCache/mergedCache declarations above saveState to avoid TDZ risk.
+- Fix outdated CHANGELOG note (2.0.0 replaced the settings namespace).
+
+## 2.0.2
+- Fix: declare inject = ['webServer'] so the plugin waits for the webServer service before registering /api/dperm routes. dsh 0.1.7 loaded the plugin before webServer was ready → ctx.get('webServer') returned undefined → routes never mounted → settings page showed a "not found" JSON error and the badge never rendered. (dsh-usage-billing, which declares webServer in inject, was unaffected — confirming the root cause.)
