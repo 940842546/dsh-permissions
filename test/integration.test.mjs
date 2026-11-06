@@ -72,7 +72,13 @@ async function boot(options = {}) {
       if (name === 'webServer') return webServer
       if (name === 'approval') return approval
       if (name === 'systemPrompt') return { section: (s) => { sections.push(s); return () => {} } }
-      if (name === 'workspaceRegistry') return { resolveByPath: async () => undefined, list: () => [] }
+      if (name === 'workspaceRegistry') {
+        if (options.noWorkspaceRegistry) return undefined
+        return {
+          resolveByPath: async () => undefined,
+          list: () => options.workspaces ?? [{ id: 'ws-1', title: 'demo' }, { id: 'ws-2', title: 'other' }],
+        }
+      }
       if (name === 'connection') return { isAuthenticated: () => options.authenticated !== false }
       return undefined
     },
@@ -221,6 +227,21 @@ test('GET /log, /stats, /grants respond with ok payloads', async () => {
     assert.equal(r.status, 200, p)
     assert.equal(r.json.ok, true, p)
   }
+})
+
+test('GET /workspaces lists id/title pairs from the registry', async () => {
+  const app = await boot()
+  const r = await app.call('GET', '/api/dperm/workspaces')
+  assert.equal(r.status, 200)
+  assert.equal(r.json.ok, true)
+  assert.deepEqual(r.json.workspaces, [{ id: 'ws-1', title: 'demo' }, { id: 'ws-2', title: 'other' }])
+})
+
+test('GET /workspaces degrades to an empty list without a registry', async () => {
+  const app = await boot({ workspaces: null, noWorkspaceRegistry: true })
+  const r = await app.call('GET', '/api/dperm/workspaces')
+  assert.equal(r.status, 200)
+  assert.deepEqual(r.json.workspaces, [])
 })
 
 test('unknown sub-path is 404', async () => {

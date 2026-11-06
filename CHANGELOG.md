@@ -113,4 +113,11 @@ ode --test) + GitHub Actions CI.
 - **Quieter polling**: the badge polls pending approvals every 3 s (was 1.5 s) and both the badge and the settings page skip polls while the tab is hidden, refreshing immediately when it becomes visible again.
 - README refreshed to describe the self-managed JSON state and the new controls.
 
+## 2.3.0
+- **"Open settings" from the badge**: the popover now has a primary action that jumps straight to the permissions page. The shell-owned settings dialog exposes no public open hook (`openSettings` exists only on the single-occupant `settings.launcher` slot, which the shipped UI already owns), so the plugin registers its own **keyed `main` panel** (`dsh-permissions`) and navigates with the documented `ctx.layout.selectPanel()` API. The panel renders the same editing UI full-width, with a "back to chat" control.
+- **Workspace list from the plugin's own route**: `GET /api/dperm/workspaces` returns `{ id, title }` pairs from the host registry. Both surfaces (settings section and main panel) now use it instead of relying on each slot's owner props, whose workspace state shape differs per slot.
+- Badge hides the action and falls back to a hint when `layout` is unavailable (older dsh).
+- Tests: +3 (workspaces route with and without a registry, main-panel canary), 60 → 63.
+
+
 

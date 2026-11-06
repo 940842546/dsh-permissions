@@ -62,6 +62,13 @@ test('disabled rules use the "!" prefix convention', () => {
   assert.ok(engine.includes('isDisabledRule('), 'engine filters disabled rules out of the prompt summary')
 })
 
+test('client registers a main panel and navigates with layout.selectPanel', () => {
+  const client = stripComments(read('lib/client.js'))
+  assert.ok(client.includes("slots.inject('main'"), 'the settings destination is a keyed main panel')
+  assert.ok(client.includes('selectPanel('), 'navigation goes through the documented layout API')
+  assert.ok(client.includes("'dsh-permissions'"), 'panel key must be stable for the badge jump')
+})
+
 test('package manifest keeps the dual-face contract', () => {
   const pkg = JSON.parse(read('package.json'))
   assert.equal(pkg.name, 'dsh-permissions')
@@ -161,6 +168,7 @@ test('dsh API surface still matches what the plugin uses', { skip: roots.length 
     ['dsh-host-webserver', 'register(route', 'route registration for /api/dperm'],
     ['dsh-workspace', 'resolveByPath', 'cwd to workspace resolution for per-workspace rules'],
     ['dsh-client-modules', '__ModuleLoader__', 'the client bundle loader'],
+    ['dsh-client-ui-layout', 'selectPanel', 'panel navigation used by the badge "open settings" action'],
   ]
   const missing = []
   for (const [pkg, token, why] of checks) {

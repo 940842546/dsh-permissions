@@ -23,6 +23,7 @@ Claude Code-style **permission rules engine** for [DeepSeek Harness](https://git
 - **Visual editor**: staged (draft) editing — changes apply only after **Save & Apply**, with one-click presets (protect sensitive dirs / key files / dangerous commands).
 - **Per-rule control**: disable/enable a single rule (kept, not deleted — stored with a `!` prefix) and move rules up/down (order within a group decides which rule matches first).
 - **Observability**: decision log (persisted across restarts, CSV export), hit counts, rule tester, merged effective view, plus a live badge stream in the composer.
+- **One-click jump**: the badge popover's "Open settings" action navigates straight to the permissions page (its own main panel, with a back-to-chat control).
 - **Localized prompts**: approval prompt text follows the UI language (via the `displayReason` channel).
 - **Hygiene**: the settings page flags rules left behind for workspaces that no longer exist, with one-click cleanup.
 
