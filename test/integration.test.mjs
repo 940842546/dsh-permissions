@@ -57,10 +57,15 @@ async function boot(options = {}) {
   const webServer = { register: (route) => { routes.push(route); return () => {} } }
   const approvalListeners = []
   let approvalCalls = 0
+  let lastApprovalRequest
   const approval = options.noApproval ? undefined : {
     config: { policy: options.policy ?? 'ask' },
     overrideOf: () => undefined,
-    request: async () => { approvalCalls += 1; return options.approvalOutcome ?? 'allowed-once' },
+    request: async (req) => {
+      approvalCalls += 1
+      lastApprovalRequest = req
+      return options.approvalOutcome ?? 'allowed-once'
+    },
   }
   const ctx = {
     get(name) {
@@ -111,6 +116,7 @@ async function boot(options = {}) {
   return {
     dir, routes, listeners, approvalListeners, sections, call, gate,
     get approvalCalls() { return approvalCalls },
+    get lastApprovalRequest() { return lastApprovalRequest },
     statePath: path.join(dir, 'dsh-permissions-state.json'),
     historyPath: path.join(dir, 'dsh-permissions-history.jsonl'),
   }
@@ -351,6 +357,62 @@ test('rejecting an ask settles as rejected and records no grant', async () => {
   await app.call('POST', '/api/dperm/ask/answer', { callId: 'call-reject', choice: 'deny' })
   assert.equal(await parked, 'rejected')
   assert.equal((await app.call('GET', '/api/dperm/grants')).json.grants.length, 0)
+})
+
+// ---------- disabled rules ('!' prefix) ----------
+test('disabled rules are inert but preserved in the draft', async () => {
+  const app = await boot()
+  const posted = await app.call('POST', '/api/dperm/rules', {
+    enabled: true,
+    deny: ['!pwsh(rm -rf *)'],
+    hard: ['!write(.ssh)'],
+    ask: ['!pwsh', '!edit', '!write'],
+    allow: [],
+  })
+  assert.equal(posted.status, 200)
+  assert.deepEqual(posted.json.value.deny, ['!pwsh(rm -rf *)'], 'disabled rules stay in storage')
+
+  // 匹配层面完全跳过
+  const deny = await app.call('GET', '/api/dperm/match-test?tool=pwsh&arg=' + encodeURIComponent('rm -rf /tmp/x'))
+  assert.equal(deny.json.outcome, 'none', 'a disabled deny rule must not match')
+  const hard = await app.call('GET', '/api/dperm/match-test?tool=write&arg=' + encodeURIComponent('C:/u/.ssh/id_rsa'))
+  assert.equal(hard.json.outcome, 'none', 'a disabled hard rule must not match')
+
+  // 执行层面也放行
+  const gate = await app.gate({ name: 'pwsh', arguments: { command: 'rm -rf /tmp/x' }, agent: AGENT })
+  assert.equal(gate.delegated, true, 'disabled rules never block')
+})
+
+test('re-enabling a rule makes it match again', async () => {
+  const app = await boot()
+  await app.call('POST', '/api/dperm/rules', { enabled: true, deny: ['!pwsh(rm -rf *)'] })
+  const off = await app.gate({ name: 'pwsh', arguments: { command: 'rm -rf /tmp/x' }, agent: AGENT })
+  assert.equal(off.delegated, true)
+
+  await app.call('POST', '/api/dperm/rules', { enabled: true, deny: ['pwsh(rm -rf *)'] })
+  const on = await app.gate({ name: 'pwsh', arguments: { command: 'rm -rf /tmp/x' }, agent: AGENT })
+  assert.equal(on.decision.kind, 'deny')
+})
+
+// ---------- localized approval text ----------
+test('ask carries a bilingual displayReason', async () => {
+  const app = await boot({ noApproval: true })
+  const r = await app.gate({ name: 'pwsh', arguments: { command: 'echo hi' }, agent: AGENT })
+  assert.equal(r.decision.kind, 'ask')
+  assert.ok(r.decision.displayReason !== undefined, 'ask decision must carry displayReason for the UI')
+  assert.ok(r.decision.displayReason.en.includes('requires confirmation'))
+  assert.ok(r.decision.displayReason.zh.includes('要求确认'))
+})
+
+test('the approval request carries displayReason while reason keeps the internal marker', async () => {
+  const app = await boot()
+  await app.gate({ name: 'pwsh', arguments: { command: 'echo hi' }, agent: AGENT })
+  const seen = app.lastApprovalRequest
+  assert.ok(seen !== undefined, 'engine must call approval.request for ask rules')
+  assert.ok(seen.reason.startsWith('[dsh-permissions-ask] '), 'reason keeps the marker so our responder claims it')
+  assert.ok(seen.displayReason !== undefined, 'approval prompt text must go through the localized channel')
+  assert.ok(seen.displayReason.en.includes('requires confirmation'))
+  assert.ok(seen.displayReason.zh.includes('要求确认'))
 })
 
 // ---------- decision log ----------

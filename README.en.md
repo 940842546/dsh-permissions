@@ -18,9 +18,13 @@ Claude Code-style **permission rules engine** for [DeepSeek Harness](https://git
   - `write(.ssh)` — path segment `.ssh` anywhere (case-insensitive, `\`/`/` normalized)
   - `write(C:\users\*)` — absolute-path prefix
   - bare `write` — every invocation
-- **Persistence**: rules live in the `dsh-permissions` settings namespace and survive restarts (`<harness home>/settings.yaml`).
-- **Model transparency**: active rules are injected into the system prompt (`[active-permission-rules]`).
+- **Persistence**: rules live in a self-managed JSON file (`<harness home>/dsh-permissions-state.json`) written atomically with a `.bak` of the previous revision, and survive restarts.
+- **Model transparency**: active rules are injected into the system prompt (`[active-permission-rules]`); disabled rules are omitted from that summary.
 - **Visual editor**: staged (draft) editing — changes apply only after **Save & Apply**, with one-click presets (protect sensitive dirs / key files / dangerous commands).
+- **Per-rule control**: disable/enable a single rule (kept, not deleted — stored with a `!` prefix) and move rules up/down (order within a group decides which rule matches first).
+- **Observability**: decision log (persisted across restarts, CSV export), hit counts, rule tester, merged effective view, plus a live badge stream in the composer.
+- **Localized prompts**: approval prompt text follows the UI language (via the `displayReason` channel).
+- **Hygiene**: the settings page flags rules left behind for workspaces that no longer exist, with one-click cleanup.
 
 ## Screenshots
 

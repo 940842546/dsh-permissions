@@ -47,6 +47,21 @@ test('engine does not misuse connection.authorizeIndex on API routes', () => {
   )
 })
 
+test('engine emits localized approval text through displayReason', () => {
+  const code = stripComments(read('lib/index.js'))
+  assert.ok(code.includes('displayReason'), 'ask prompts should use the localized displayReason channel')
+  assert.ok(code.includes('askTexts'), 'expected the shared bilingual prompt helper')
+  assert.ok(!code.includes('ctx.settings'), 'sanity: still self-managed state')
+})
+
+test('disabled rules use the "!" prefix convention', () => {
+  const engine = stripComments(read('lib/index.js'))
+  const client = stripComments(read('lib/client.js'))
+  assert.ok(engine.includes("DISABLED_PREFIX = '!'"), 'engine must own the disabled-rule convention')
+  assert.ok(client.includes("DISABLED_PREFIX = '!'"), 'client must agree with the engine on the convention')
+  assert.ok(engine.includes('isDisabledRule('), 'engine filters disabled rules out of the prompt summary')
+})
+
 test('package manifest keeps the dual-face contract', () => {
   const pkg = JSON.parse(read('package.json'))
   assert.equal(pkg.name, 'dsh-permissions')
@@ -140,6 +155,7 @@ test('dsh API surface still matches what the plugin uses', { skip: roots.length 
     ['dsh-tools', 'PreToolDecision', 'the decision union (allow/deny/ask)'],
     ['dsh-tools', "'deny'", 'deny variant'],
     ['dsh-user-approval', 'overrideOf', 'approval policy read (ask follows session policy)'],
+    ['dsh-user-approval', 'displayReason', 'the localized prompt channel (ApprovalRequest.displayReason)'],
     ['dsh-user-approval', 'approval/request', 'the ask waterfall the session-grant responder hooks'],
     ['dsh-client-connection', 'isAuthenticated', 'the browser-auth check on /api/dperm routes'],
     ['dsh-host-webserver', 'register(route', 'route registration for /api/dperm'],

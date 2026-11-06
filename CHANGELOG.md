@@ -105,3 +105,12 @@ ode --test) + GitHub Actions CI.
 - **Fix**: the decision-log size counter starts from the on-disk file size, so an already-oversized log is trimmed on the next write instead of waiting for another 2 MB.
 - **Tests**: new engine integration suite (fake Cordis context driving every route and listener) and contract suite (source canaries for the inject/settings/authorizeIndex regressions + a dsh API-surface comparison that runs whenever a dsh installation is discoverable). `npm test` runs all 53 tests; CI now runs the whole suite.
 
+## 2.2.0
+- **Per-rule disable/enable**: toggle a rule without deleting it. Disabled rules are stored with a `!` prefix (`"!pwsh"`), which the engine's syntax parser already rejects, so they are inert everywhere — including the prompt summary — while staying visible and one click away from being re-enabled. Older plugin versions read them as inert too, so the format is backward compatible.
+- **Per-rule reordering**: move rules up/down inside their group. Order decides which rule matches first, so precedence inside one action is now editable.
+- **Stale workspace cleanup**: the settings page lists rule sets whose workspace no longer exists and offers a one-click cleanup (only when the workspace list actually loaded, to avoid false positives).
+- **Localized approval prompts**: ask prompts now send `displayReason` (`en` + `zh`) alongside the internal `reason`, so the approval UI renders in the active language. `reason` keeps its `[dsh-permissions-ask]` marker for the session-grant responder.
+- **Quieter polling**: the badge polls pending approvals every 3 s (was 1.5 s) and both the badge and the settings page skip polls while the tab is hidden, refreshing immediately when it becomes visible again.
+- README refreshed to describe the self-managed JSON state and the new controls.
+
+
