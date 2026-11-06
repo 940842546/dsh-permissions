@@ -18,5 +18,9 @@ jobs:
           node --check lib/index.js
           node --check lib/match.js
           node --check lib/client.js
-      - name: Unit tests (matcher)
-        run: node --test test/match.test.mjs
+      # matcher unit tests + engine integration tests (fake Cordis context, all routes
+      # and listeners) + source-level contract canaries. The dsh API-surface check
+      # inside contract.test.mjs skips here because no dsh installation is present;
+      # run `npm test` locally after upgrading dsh to get that comparison.
+      - name: Tests
+        run: npm test

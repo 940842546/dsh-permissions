@@ -97,3 +97,11 @@ ode --test) + GitHub Actions CI.
 
 ## 2.0.2
 - Fix: declare inject = ['webServer'] so the plugin waits for the webServer service before registering /api/dperm routes. dsh 0.1.7 loaded the plugin before webServer was ready → ctx.get('webServer') returned undefined → routes never mounted → settings page showed a "not found" JSON error and the badge never rendered. (dsh-usage-billing, which declares webServer in inject, was unaffected — confirming the root cause.)
+
+## 2.1.0
+- **Fix (data safety)**: rule state is written atomically — write `.tmp`, keep the previous file as `.bak`, then `rename`. A crash mid-write no longer leaves truncated JSON that the next boot would mistake for "first run" and silently replace with defaults.
+- **Fix**: `POST /api/dperm/rules` validates every field type (returns 400 naming the offending field) and merges partial bodies over defaults, so submitting only `{ enabled }` no longer empties the rule arrays.
+- **Fix**: a pending approval that gets cancelled mid-turn is now removed from the queue instead of lingering forever — previously `/api/dperm/ask` kept returning it, so the badge pulsed "pending confirmation" with a prompt that could not be answered.
+- **Fix**: the decision-log size counter starts from the on-disk file size, so an already-oversized log is trimmed on the next write instead of waiting for another 2 MB.
+- **Tests**: new engine integration suite (fake Cordis context driving every route and listener) and contract suite (source canaries for the inject/settings/authorizeIndex regressions + a dsh API-surface comparison that runs whenever a dsh installation is discoverable). `npm test` runs all 53 tests; CI now runs the whole suite.
+
