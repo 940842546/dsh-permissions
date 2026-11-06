@@ -123,6 +123,12 @@ ode --test) + GitHub Actions CI.
 - **Main panel layout**: the wide surface is now a real page instead of a stretched dialog — sticky header bar (back · title · engine switch) and a two-column body: editing on the left (scope, presets, builder, save bar, rule panels), diagnostics on the right (merged view, tester, decision log, grants). Collapses to one column under 1020 px.
 - **Popover polish**: roomier padding, 12 px radius, layered shadow, wider minimum, and a hover tint on the badge.
 
+## 2.3.2
+- **Visual language matched to the shipped settings UI.** Values were taken from the installed `ui-settings*` packages rather than invented: heading 18 px/600, body 13 px, secondary text `--dsw-alias-label-tertiary` (official intro color), separators `.5 px`, panel title 16 px/500, hover surfaces `--dsw-alias-interactive-bg-hover`, radii `--dsw-radius-md`/`--dsw-radius-panel`, popover elevation `--dsw-elevation-prominent` (each with a fallback so an older theme degrades cleanly).
+- Removed the custom-looking choices: dashed preset borders, heavy card shadows, pill-heavy buttons, and colored chips — replaced by bordered sections, hairline row separators, and text-weight hierarchy.
+- Surfaces follow the official order: page `bg-layer-2`, groups `bg-layer-1`, inputs `bg-base`.
+
+
 
 
 
