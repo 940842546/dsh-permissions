@@ -128,6 +128,12 @@ ode --test) + GitHub Actions CI.
 - Removed the custom-looking choices: dashed preset borders, heavy card shadows, pill-heavy buttons, and colored chips — replaced by bordered sections, hairline row separators, and text-weight hierarchy.
 - Surfaces follow the official order: page `bg-layer-2`, groups `bg-layer-1`, inputs `bg-base`.
 
+## 2.3.3
+- **Fix: the "Open settings" action could be missing entirely.** The client read `layout` during `apply()`, when the service may not be mounted yet — so the main panel was never registered and the badge hid the button (the same timing trap as `webServer` on 0.1.7). The service is now resolved lazily on click, and the main panel is registered unconditionally (`slots.inject('main', …)` waits for the slot itself).
+- Failure is no longer silent: if navigation is impossible, the popover shows the reason instead of doing nothing.
+- **Quick on/off switch in the badge popover**: a compact `引擎 [switch]` row next to "Open settings", posting the same state the settings page writes and notifying other surfaces via `dsh-permissions-changed`.
+
+
 
 
 
