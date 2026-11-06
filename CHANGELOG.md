@@ -133,6 +133,12 @@ ode --test) + GitHub Actions CI.
 - Failure is no longer silent: if navigation is impossible, the popover shows the reason instead of doing nothing.
 - **Quick on/off switch in the badge popover**: a compact `引擎 [switch]` row next to "Open settings", posting the same state the settings page writes and notifying other surfaces via `dsh-permissions-changed`.
 
+## 2.3.4
+- **Fix: host services are resolved lazily.** `workspaceRegistry`, `approval` and `systemPrompt` were read once during `apply()`; when any of them mounted slightly later they stayed `undefined` for the whole process. Symptom found live: `GET /api/dperm/workspaces` returned `[]` even though the registry was registered. Services are now looked up on use and cached only once found.
+- The approval responder is registered unconditionally (it delegates with `next()` for any request that is not ours), so it can no longer be lost to the same race.
+- Tests: +1 lazy-resolution regression, 63 → 64.
+
+
 
 
 

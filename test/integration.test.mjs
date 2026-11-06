@@ -57,6 +57,7 @@ async function boot(options = {}) {
   const webServer = { register: (route) => { routes.push(route); return () => {} } }
   const approvalListeners = []
   let approvalCalls = 0
+  let wsLookups = 0
   let lastApprovalRequest
   const approval = options.noApproval ? undefined : {
     config: { policy: options.policy ?? 'ask' },
@@ -74,6 +75,8 @@ async function boot(options = {}) {
       if (name === 'systemPrompt') return { section: (s) => { sections.push(s); return () => {} } }
       if (name === 'workspaceRegistry') {
         if (options.noWorkspaceRegistry) return undefined
+        // 模拟服务在 apply 之后才挂载：第一次查询返回 undefined
+        if (options.deferWorkspaceRegistry && wsLookups++ < 1) return undefined
         return {
           resolveByPath: async () => undefined,
           list: () => options.workspaces ?? [{ id: 'ws-1', title: 'demo' }, { id: 'ws-2', title: 'other' }],
@@ -242,6 +245,17 @@ test('GET /workspaces degrades to an empty list without a registry', async () =>
   const r = await app.call('GET', '/api/dperm/workspaces')
   assert.equal(r.status, 200)
   assert.deepEqual(r.json.workspaces, [])
+})
+
+test('services are resolved lazily when they mount after apply', async () => {
+  // 回归：曾在 apply 时缓存 ctx.get() 的结果，服务晚挂载就永久失效
+  const app = await boot({ deferWorkspaceRegistry: true })
+  // 第一次查询拿到 undefined（模拟 apply 时没有该服务）
+  const first = await app.call('GET', '/api/dperm/workspaces')
+  assert.equal(first.status, 200)
+  // 之后服务挂上，必须能解析到（而不是永久缓存 undefined）
+  const second = await app.call('GET', '/api/dperm/workspaces')
+  assert.equal(second.json.workspaces.length, 2, 'lazy resolution must recover once the service mounts')
 })
 
 test('unknown sub-path is 404', async () => {
