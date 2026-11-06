@@ -3,7 +3,7 @@
 // 非原子写、幽灵待确认项）单测抓不到。
 import { test, after } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtemp, rm, readFile, access } from 'node:fs/promises'
+import { mkdtemp, rm, readFile, access, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
@@ -159,8 +159,23 @@ test('POST /rules persists atomically and leaves valid JSON', async () => {
   assert.deepEqual(parsed.hard, ['write(.ssh)', 'edit(.ssh)'])
   // 第二次保存应留下上一版备份
   await access(app.statePath + '.bak')
-  // .tmp 不应残留（已 rename 掉）
-  await assert.rejects(access(app.statePath + '.tmp'))
+  // 所有临时文件都应已 rename 掉，不留残渣
+  const leftovers = (await readdir(app.dir)).filter((f) => f.startsWith('dsh-permissions-state.json.tmp'))
+  assert.deepEqual(leftovers, [], 'temporary files must not be left behind')
+})
+
+test('concurrent saves serialize without corrupting the file', async () => {
+  const app = await boot()
+  await Promise.all([
+    app.call('POST', '/api/dperm/rules', { enabled: true, hard: ['write(a)'] }),
+    app.call('POST', '/api/dperm/rules', { enabled: true, hard: ['write(b)'] }),
+    app.call('POST', '/api/dperm/rules', { enabled: true, hard: ['write(c)'] }),
+  ])
+  const parsed = JSON.parse(await readFile(app.statePath, 'utf8'))
+  assert.equal(parsed.hard.length, 1, 'each save is a whole section; the last one wins')
+  assert.ok(['write(a)', 'write(b)', 'write(c)'].includes(parsed.hard[0]))
+  const leftovers = (await readdir(app.dir)).filter((f) => f.startsWith('dsh-permissions-state.json.tmp'))
+  assert.deepEqual(leftovers, [], 'concurrent saves must not leave temporary files')
 })
 
 test('POST /rules rejects malformed field types with 400', async () => {
