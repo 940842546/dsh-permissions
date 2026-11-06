@@ -119,5 +119,10 @@ ode --test) + GitHub Actions CI.
 - Badge hides the action and falls back to a hint when `layout` is unavailable (older dsh).
 - Tests: +3 (workspaces route with and without a registry, main-panel canary), 60 → 63.
 
+## 2.3.1
+- **Main panel layout**: the wide surface is now a real page instead of a stretched dialog — sticky header bar (back · title · engine switch) and a two-column body: editing on the left (scope, presets, builder, save bar, rule panels), diagnostics on the right (merged view, tester, decision log, grants). Collapses to one column under 1020 px.
+- **Popover polish**: roomier padding, 12 px radius, layered shadow, wider minimum, and a hover tint on the badge.
+
+
 
 
