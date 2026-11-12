@@ -138,6 +138,12 @@ ode --test) + GitHub Actions CI.
 - The approval responder is registered unconditionally (it delegates with `next()` for any request that is not ours), so it can no longer be lost to the same race.
 - Tests: +1 lazy-resolution regression, 63 → 64.
 
+## 2.3.5
+- **Popover fits the viewport instead of running off it.** On open (and on scroll/resize) the badge measures the space above and below the composer; when the upper side cannot hold the panel it flips downward (`dp-pop-below`), and its height is capped to the room actually available (140–460 px) with internal scrolling. This removes the one class of bug we hit in practice ("popover off-screen at the top") without taking on a portalled fixed overlay.
+- Why not `fixed` + portal: the shipped `conversation.input.right` note about portal only constrains fixed overlays, and ours is anchored inside the composer. Moving to fixed would also require coordinate recomputation, outside-click that excludes the portal node, edge flipping, Escape handling and macOS `data-window-drag-exclude`. Revisit only if the badge moves into a clipping container or the panel needs to cover dialogs.
+- Placement updates bail out when nothing changed, so scrolling does not re-render on every event.
+
+
 
 
 
